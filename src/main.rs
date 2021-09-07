@@ -9,7 +9,9 @@ use std::path::Path;
 use url::create_url;
 
 // TODO: Check if .gitignore already exists, if so, ask perm before overwriting.
-// TODO: cache gitignore contents for each language with expiry
+// TODO: cache gitignore contents for each language
+// TODO: edit gitignore file with editor
+// TODO: force update request
 // TODO: write tests to check if request still works
 // TODO: write tests for command line cli
 
@@ -21,11 +23,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .about("generates ignore files for you")
         .arg(
             Arg::with_name("lang")
-                .short("l")
-                .long("lang")
-                .value_name("LANGUAGE")
                 .help("Fetch <LANGUAGE> .gitignore file.")
-                .takes_value(true),
+                .value_name("LANGUAGE")
+                .required(true),
         )
         .get_matches();
 
