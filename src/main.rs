@@ -17,7 +17,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .about("generates ignore files for you")
         .arg(
             Arg::with_name("lang")
-                .help("Fetch <LANGUAGE> .gitignore file.")
+                .help("Create <LANGUAGE> .gitignore file.")
                 .value_name("LANGUAGE")
                 .required(true),
         )
