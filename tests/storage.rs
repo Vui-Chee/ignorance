@@ -84,3 +84,22 @@ fn add_template() -> std::io::Result<()> {
     remove_dir_all(storage_path).unwrap();
     Ok(())
 }
+
+#[test]
+fn replace_template() -> std::io::Result<()> {
+    let test_storage_name = create_storage_name("replace_template");
+    let storage_path = home_dir().unwrap().join(&test_storage_name);
+    let path_to_template = storage_path.join("C++.gitignore");
+    let storage = Storage::new(test_storage_name)?;
+    // Create template file with contents to be overwritten.
+    let before_contents = "# Prerequisites\n*.d\n# Compiled Object files\n*.slo\n*.lo\n*.o\n*.obj";
+    let mut file = File::create(&path_to_template)?;
+    file.write(before_contents.as_bytes())?;
+    let contents = "# Prerequisites\n*.d\n# Compiled Object files\n*.slo\n*.lo\n*.o\n*.obj\n# Compiled Static libraries\n*.lai";
+    storage.add_template("C++".to_owned(), contents)?;
+
+    assert_eq!(read_to_string(path_to_template).unwrap(), contents);
+
+    remove_dir_all(storage_path).unwrap();
+    Ok(())
+}
