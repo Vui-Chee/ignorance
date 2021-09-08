@@ -52,7 +52,7 @@ impl Storage {
     pub fn add_template(&self, lang: String, contents: &str) -> std::io::Result<()> {
         let template_path = self.path().unwrap().join(self.template_filename(lang));
         let mut file = File::create(template_path)?;
-        file.write(contents.as_bytes())?;
+        file.write_all(contents.as_bytes())?;
 
         Ok(())
     }
