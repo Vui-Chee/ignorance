@@ -24,7 +24,7 @@ impl Storage {
     /// Returns the directory path where all the template files are stored.
     pub fn path(&self) -> Option<PathBuf> {
         if let Some(home) = home_dir() {
-            return Some(PathBuf::from(home.join(&self.dirname)));
+            return Some(home.join(&self.dirname));
         }
 
         None
