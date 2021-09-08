@@ -6,6 +6,7 @@ fn valid_url() {
     let gitignore_ext = ".gitignore";
     let url = create_url("c++".to_owned());
     let url_len = url.len();
+
     // check domain
     assert_eq!(&url[..expected_domain.len()], expected_domain);
     // check extension
@@ -23,6 +24,7 @@ fn first_letter_uppercase() {
     let url = create_url(lang.to_owned());
     let len = url.len();
     let first_letter_index = len - lang.len() - 10;
+
     assert_eq!(
         &url[first_letter_index..first_letter_index + 1],
         &lang[0..1].to_uppercase()
