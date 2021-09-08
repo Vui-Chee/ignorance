@@ -1,3 +1,4 @@
+mod file;
 mod url;
 
 use clap::{App, Arg};
@@ -7,13 +8,6 @@ use std::io::prelude::*;
 use std::path::Path;
 
 use url::create_url;
-
-// TODO: Check if .gitignore already exists, if so, ask perm before overwriting.
-// TODO: cache gitignore contents for each language
-// TODO: edit gitignore file with editor
-// TODO: force update request
-// TODO: write tests to check if request still works
-// TODO: write tests for command line cli
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
