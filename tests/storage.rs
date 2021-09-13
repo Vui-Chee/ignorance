@@ -1,6 +1,6 @@
 use tempfile::tempdir;
 
-use std::fs::{create_dir, metadata, read_to_string, remove_dir, remove_dir_all, File};
+use std::fs::{metadata, read_to_string, remove_dir, File};
 use std::io::prelude::*;
 
 use ignorance::file::Storage;
