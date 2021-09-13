@@ -370,6 +370,7 @@ dependencies = [
  "clap",
  "dirs",
  "reqwest",
+ "tempfile",
  "tokio",
 ]
 
