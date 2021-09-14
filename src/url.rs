@@ -1,12 +1,28 @@
-use std::path::Path;
+use dirs::home_dir;
+use std::path::{Path, PathBuf};
 
 use crate::language::LANGUAGES_MAP;
 
-pub fn template_filename(lang: &str) -> String {
-    let filename = LANGUAGES_MAP.get(lang).unwrap();
-    let extension = ".gitignore";
+static TEMPLATE_DIRNAME: &str = ".ignorance";
 
-    format!("{}{}", filename, extension)
+pub fn template_filename(lang: &str) -> Option<String> {
+    let filename = LANGUAGES_MAP.get(lang);
+
+    if let Some(filename) = filename {
+        let extension = ".gitignore";
+
+        return Some(format!("{}{}", filename, extension));
+    }
+
+    None
+}
+
+pub fn template_dirpath() -> PathBuf {
+    home_dir().unwrap().join(TEMPLATE_DIRNAME)
+}
+
+pub fn template_filepath(lang: &str) -> PathBuf {
+    template_dirpath().join(template_filename(lang).unwrap_or_else(|| "".to_owned()))
 }
 
 pub fn create_url(lang: &str) -> String {
@@ -21,7 +37,7 @@ pub fn create_url(lang: &str) -> String {
     let domain = Path::new("https://raw.githubusercontent.com/github/gitignore/master/");
 
     domain
-        .join(template_filename(lang))
+        .join(template_filename(lang).unwrap_or_else(|| "".to_owned()))
         .to_str()
         .unwrap()
         .to_string()

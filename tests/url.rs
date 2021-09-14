@@ -1,23 +1,39 @@
-use ignorance::url::{create_url, template_filename};
+use dirs::home_dir;
 
 use ignorance::language::LANGUAGES_MAP;
+use ignorance::url::{create_url, template_filename, template_filepath};
 
 #[test]
-fn valid_filename() {
+fn valid_template_filename() {
     let filename = template_filename("c++");
-    assert_eq!(filename, "C++.gitignore");
+    assert_eq!(filename.unwrap(), "C++.gitignore");
     let filename = template_filename("igorpro");
-    assert_eq!(filename, "IGORPro.gitignore");
+    assert_eq!(filename.unwrap(), "IGORPro.gitignore");
     let filename = template_filename("craftcms");
-    assert_eq!(filename, "CraftCMS.gitignore");
+    assert_eq!(filename.unwrap(), "CraftCMS.gitignore");
     let filename = template_filename("episerver");
-    assert_eq!(filename, "EPiServer.gitignore");
+    assert_eq!(filename.unwrap(), "EPiServer.gitignore");
 }
 
 #[test]
-#[should_panic]
-fn invalid_filename() {
-    template_filename("asdf");
+fn invalid_template_filename() {
+    assert_eq!(template_filename("asdf"), None);
+}
+
+#[test]
+fn valid_template_filepath() {
+    assert_eq!(
+        template_filepath("c++"),
+        home_dir().unwrap().join(".ignorance").join("C++.gitignore")
+    );
+}
+
+#[test]
+fn invalid_template_filepath() {
+    assert_eq!(
+        template_filepath("asdf"),
+        home_dir().unwrap().join(".ignorance")
+    );
 }
 
 fn check_lang_url(lang: &str) {
