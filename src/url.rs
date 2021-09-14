@@ -1,6 +1,8 @@
 use std::path::Path;
 
-pub fn create_url(mut lang: String) -> String {
+use crate::language::LANGUAGES_MAP;
+
+pub fn create_url(mut lang: &str) -> String {
     if lang.is_empty() {
         panic!("lang should not be empty");
     }
@@ -9,10 +11,7 @@ pub fn create_url(mut lang: String) -> String {
         panic!("lang should be ascii");
     }
 
-    // Make first letter uppercase
-    if let Some(r) = lang.get_mut(0..1) {
-        r.make_ascii_uppercase();
-    }
+    lang = LANGUAGES_MAP.get(lang).unwrap();
     let domain = Path::new("https://raw.githubusercontent.com/github/gitignore/master/");
     let extension = ".gitignore";
 

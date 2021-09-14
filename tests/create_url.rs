@@ -1,11 +1,13 @@
 use ignorance::url::create_url;
 
-#[test]
-fn valid_url() {
+use ignorance::language::LANGUAGES_MAP;
+
+fn check_lang_url(lang: &str) {
     let expected_domain = "https://raw.githubusercontent.com/github/gitignore/master/";
     let gitignore_ext = ".gitignore";
-    let url = create_url("c++".to_owned());
+    let url = create_url(lang);
     let url_len = url.len();
+    let lang_filename = LANGUAGES_MAP.get(lang).unwrap();
 
     // check domain
     assert_eq!(&url[..expected_domain.len()], expected_domain);
@@ -14,31 +16,29 @@ fn valid_url() {
     // check full url created
     assert_eq!(
         url,
-        "https://raw.githubusercontent.com/github/gitignore/master/C++.gitignore"
+        format!(
+            "https://raw.githubusercontent.com/github/gitignore/master/{}.gitignore",
+            lang_filename
+        )
     );
 }
 
 #[test]
-fn first_letter_uppercase() {
-    let lang = "python";
-    let url = create_url(lang.to_owned());
-    let len = url.len();
-    let first_letter_index = len - lang.len() - 10;
-
-    assert_eq!(
-        &url[first_letter_index..first_letter_index + 1],
-        &lang[0..1].to_uppercase()
-    );
+fn get_valid_url_for_lang() {
+    check_lang_url("c++");
+    check_lang_url("igorpro");
+    check_lang_url("craftcms");
+    check_lang_url("episerver");
 }
 
 #[test]
 #[should_panic(expected = "lang should not be empty")]
 fn empty_string() {
-    create_url("".to_owned());
+    create_url("");
 }
 
 #[test]
 #[should_panic(expected = "lang should be ascii")]
 fn non_ascii() {
-    create_url(".网络".to_owned());
+    create_url(".网络");
 }
