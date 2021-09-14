@@ -9,10 +9,10 @@ use ignorance::file::Storage;
 fn new_storage() -> std::io::Result<()> {
     let temp_dir = tempdir()?;
     remove_dir(&temp_dir)?;
-    let storage = Storage::new(temp_dir.path())?;
+    Storage::new(temp_dir.path())?;
 
     assert!(temp_dir.path().exists());
-    assert!(metadata(storage.path())?.is_dir());
+    assert!(metadata(temp_dir.path())?.is_dir());
 
     Ok(())
 }
