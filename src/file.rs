@@ -37,8 +37,9 @@ impl Storage {
         let template_path = self.path().join(self.template_filename(lang));
         let mut file = File::create(&template_path)?;
         eprintln!(
-            "INSIDE ADD_TEMPLATE {:?}, exists {}",
+            "INSIDE ADD_TEMPLATE {:?}, path {:?}, exists {}",
             file,
+            template_path,
             template_path.exists()
         );
         file.write_all(contents.as_bytes())?;

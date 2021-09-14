@@ -92,7 +92,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
         stdout().flush()?;
 
-        eprintln!("DIRPATH {:?}", storage_dirpath);
         eprintln!("FILEPATH {:?}, exists {}", filepath, filepath.exists());
 
         // Otherwise, read contents from template filepath.
