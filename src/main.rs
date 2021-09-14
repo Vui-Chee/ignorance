@@ -6,18 +6,20 @@ mod loader;
 
 mod file;
 mod language;
+mod prompt;
 mod request;
 mod url;
 
 use clap::{App, Arg};
 
 use std::fs::copy;
-use std::io::stdout;
-use std::io::Write;
+use std::io::{stdout, Write};
 use std::process::exit;
 
 #[cfg(not(debug_assertions))]
 use loader::display_loader;
+
+use prompt::prompt_user_before_overwrite;
 
 use file::Storage;
 use request::fetch_template;
@@ -35,6 +37,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 .help("Refetch template file from source"),
         )
         .arg(
+            Arg::with_name("force")
+                .short("f")
+                .help("Just force overwrite if .gitignore exists"),
+        )
+        .arg(
             Arg::with_name("lang")
                 .help("Create <LANGUAGE> .gitignore file.")
                 .value_name("LANGUAGE")
@@ -49,6 +56,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         if filepath == storage_dirpath {
             eprintln!("Language Not Found");
             exit(1);
+        }
+
+        // Prompt user before overwriting existing .gitignore
+        if !matches.is_present("force") {
+            prompt_user_before_overwrite()?;
         }
 
         // create template dir at home path.
