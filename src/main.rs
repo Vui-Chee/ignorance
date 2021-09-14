@@ -51,6 +51,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     if let Some(lang) = matches.value_of("lang") {
         let filepath = template_filepath(lang);
+        eprintln!(
+            "before FILEPATH {:?}, exists {}",
+            filepath,
+            filepath.exists()
+        );
         let storage_dirpath = template_dirpath();
 
         if filepath == storage_dirpath {
@@ -93,7 +98,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         stdout().flush()?;
 
         eprintln!("DIRPATH {:?}", storage_dirpath);
-        eprintln!("FILEPATH {:?}", filepath);
+        eprintln!("FILEPATH {:?}, exists {}", filepath, filepath.exists());
 
         // Otherwise, read contents from template filepath.
         // NOTE: copy will create .gitignore if it does not exist.
