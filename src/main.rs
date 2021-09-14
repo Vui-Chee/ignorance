@@ -1,19 +1,25 @@
 #[macro_use]
 extern crate lazy_static;
 
+#[cfg(not(debug_assertions))]
+mod loader;
+
 mod file;
 mod language;
-mod loader;
 mod request;
 mod url;
 
 use clap::{App, Arg};
 
 use std::fs::copy;
+use std::io::stdout;
+use std::io::Write;
 use std::process::exit;
 
-use file::Storage;
+#[cfg(not(debug_assertions))]
 use loader::display_loader;
+
+use file::Storage;
 use request::fetch_template;
 use url::{template_dirpath, template_filepath};
 
@@ -36,12 +42,19 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         )
         .get_matches();
 
-    let storage_dirpath = template_dirpath();
-    let storage = Storage::new(storage_dirpath.as_path()); // create template dir at home path.
-
     if let Some(lang) = matches.value_of("lang") {
         let filepath = template_filepath(lang);
+        let storage_dirpath = template_dirpath();
 
+        if filepath == storage_dirpath {
+            eprintln!("Language Not Found");
+            exit(1);
+        }
+
+        // create template dir at home path.
+        let storage = Storage::new(storage_dirpath.as_path());
+
+        #[cfg(not(debug_assertions))]
         let child = display_loader(10);
 
         // Fetch from api if any of the two conditions are met:
@@ -50,7 +63,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         if matches.is_present("update") || !filepath.exists() {
             let response = fetch_template(lang).await?;
 
+            #[cfg(not(debug_assertions))]
             child.join().unwrap();
+
             if response.status() >= reqwest::StatusCode::BAD_REQUEST {
                 eprintln!("Language Not Found");
                 exit(1);
@@ -59,8 +74,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             let template = response.text().await?;
             storage?.add_template(lang.to_owned(), &template)?;
         } else {
+            #[cfg(not(debug_assertions))]
             child.join().unwrap();
         }
+
+        stdout().flush()?;
 
         // Otherwise, read contents from template filepath.
         // NOTE: copy will create .gitignore if it does not exist.
