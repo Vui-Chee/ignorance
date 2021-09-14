@@ -3,6 +3,7 @@ extern crate lazy_static;
 
 mod file;
 mod language;
+mod loader;
 mod request;
 mod url;
 
@@ -12,6 +13,7 @@ use std::fs::copy;
 use std::process::exit;
 
 use file::Storage;
+use loader::display_loader;
 use request::fetch_template;
 use url::{template_dirpath, template_filepath};
 
@@ -40,12 +42,15 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     if let Some(lang) = matches.value_of("lang") {
         let filepath = template_filepath(lang);
 
+        let child = display_loader(10);
+
         // Fetch from api if any of the two conditions are met:
         // 1. force_update option is applied
         // 2. template file does not exist
         if matches.is_present("update") || !filepath.exists() {
             let response = fetch_template(lang).await?;
 
+            child.join().unwrap();
             if response.status() >= reqwest::StatusCode::BAD_REQUEST {
                 eprintln!("Language Not Found");
                 exit(1);
@@ -53,14 +58,18 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
             let template = response.text().await?;
             storage?.add_template(lang.to_owned(), &template)?;
+        } else {
+            child.join().unwrap();
         }
 
         // Otherwise, read contents from template filepath.
         // NOTE: copy will create .gitignore if it does not exist.
         match copy(filepath, ".gitignore") {
-            Ok(_) => {}
+            Ok(_) => {
+                println!("Successfully generated .gitignore");
+            }
             Err(_err) => {
-                eprintln!("Not a valid language");
+                eprintln!("Cannot find language template");
                 exit(1);
             }
         }
