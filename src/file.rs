@@ -35,7 +35,12 @@ impl Storage {
     /// overwrites existing template file.
     pub fn add_template(&self, lang: String, contents: &str) -> std::io::Result<()> {
         let template_path = self.path().join(self.template_filename(lang));
-        let mut file = File::create(template_path)?;
+        let mut file = File::create(&template_path)?;
+        eprintln!(
+            "INSIDE ADD_TEMPLATE {:?}, exists {}",
+            file,
+            template_path.exists()
+        );
         file.write_all(contents.as_bytes())?;
 
         Ok(())

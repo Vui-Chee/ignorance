@@ -84,16 +84,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
 
             let template = response.text().await?;
-            let res = storage?.add_template(lang.to_owned(), &template);
-
-            eprintln!("ADD_TEMPLATE res {:?}", res);
-            eprintln!(
-                "AFTER ADD TEMPLATE {:?} - exists {}",
-                filepath,
-                filepath.exists()
-            );
-
-            res?;
+            storage?.add_template(lang.to_owned(), &template)?;
         } else {
             #[cfg(not(debug_assertions))]
             child.join().unwrap();
