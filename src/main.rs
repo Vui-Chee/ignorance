@@ -51,11 +51,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     if let Some(lang) = matches.value_of("lang") {
         let filepath = template_filepath(lang);
-        eprintln!(
-            "before FILEPATH {:?}, exists {}",
-            filepath,
-            filepath.exists()
-        );
         let storage_dirpath = template_dirpath();
 
         if filepath == storage_dirpath {
@@ -90,6 +85,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
             let template = response.text().await?;
             storage?.add_template(lang.to_owned(), &template)?;
+
+            eprintln!(
+                "AFTER ADD TEMPLATE {:?} - exists {}",
+                filepath,
+                filepath.exists()
+            );
         } else {
             #[cfg(not(debug_assertions))]
             child.join().unwrap();
