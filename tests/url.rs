@@ -1,6 +1,24 @@
-use ignorance::url::create_url;
+use ignorance::url::{create_url, template_filename};
 
 use ignorance::language::LANGUAGES_MAP;
+
+#[test]
+fn valid_filename() {
+    let filename = template_filename("c++");
+    assert_eq!(filename, "C++.gitignore");
+    let filename = template_filename("igorpro");
+    assert_eq!(filename, "IGORPro.gitignore");
+    let filename = template_filename("craftcms");
+    assert_eq!(filename, "CraftCMS.gitignore");
+    let filename = template_filename("episerver");
+    assert_eq!(filename, "EPiServer.gitignore");
+}
+
+#[test]
+#[should_panic]
+fn invalid_filename() {
+    template_filename("asdf");
+}
 
 fn check_lang_url(lang: &str) {
     let expected_domain = "https://raw.githubusercontent.com/github/gitignore/master/";

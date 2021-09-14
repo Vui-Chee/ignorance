@@ -2,7 +2,14 @@ use std::path::Path;
 
 use crate::language::LANGUAGES_MAP;
 
-pub fn create_url(mut lang: &str) -> String {
+pub fn template_filename(lang: &str) -> String {
+    let filename = LANGUAGES_MAP.get(lang).unwrap();
+    let extension = ".gitignore";
+
+    format!("{}{}", filename, extension)
+}
+
+pub fn create_url(lang: &str) -> String {
     if lang.is_empty() {
         panic!("lang should not be empty");
     }
@@ -11,14 +18,11 @@ pub fn create_url(mut lang: &str) -> String {
         panic!("lang should be ascii");
     }
 
-    lang = LANGUAGES_MAP.get(lang).unwrap();
     let domain = Path::new("https://raw.githubusercontent.com/github/gitignore/master/");
-    let extension = ".gitignore";
 
-    String::from(
-        domain
-            .join(format!("{}{}", lang, extension))
-            .to_str()
-            .unwrap(),
-    )
+    domain
+        .join(template_filename(lang))
+        .to_str()
+        .unwrap()
+        .to_string()
 }
