@@ -2,7 +2,7 @@ name: Rust
 
 on:
   schedule:
-    - cron: '0 0 * * SAT'
+    - cron: '0 0 * * 4'
 
 env:
   CARGO_TERM_COLOR: always
