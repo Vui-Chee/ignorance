@@ -1,5 +1,5 @@
 use ignorance::language::LANGUAGES_MAP;
-use ignorance::request::create_url;
+use ignorance::request::{create_url, fetch_template};
 
 fn check_lang_url(lang: &str) {
     let expected_domain = "https://raw.githubusercontent.com/github/gitignore/master/";
@@ -40,4 +40,22 @@ fn empty_string() {
 #[should_panic(expected = "filename should be ascii")]
 fn non_ascii() {
     create_url(".网络");
+}
+
+#[tokio::test]
+async fn successful_api_call() -> Result<(), Box<dyn std::error::Error>> {
+    let response = fetch_template("Python.gitignore").await?;
+
+    assert_eq!(response.status(), 200);
+
+    Ok(())
+}
+
+#[tokio::test]
+async fn unsuccessful_api_call() -> Result<(), Box<dyn std::error::Error>> {
+    let response = fetch_template("abcd.gitignore").await?;
+
+    assert_eq!(response.status(), 404);
+
+    Ok(())
 }
