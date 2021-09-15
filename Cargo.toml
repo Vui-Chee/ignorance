@@ -9,6 +9,10 @@ license = "MIT"
 homepage = "https://github.com/Vui-Chee/ignorance"
 repository = "https://github.com/Vui-Chee/ignorance"
 readme = "README.md"
+exclude = [
+    ".github",
+    "tests",
+]
 
 [dependencies]
 tokio = { version = "1.11.0", features = ["full"] }
