@@ -7,7 +7,7 @@ use std::path::Path;
 use std::process::Command;
 
 use ignorance::file::Storage;
-use ignorance::url::{template_dirpath, template_filepath};
+use ignorance::path::{template_dirpath, template_filepath};
 
 #[test]
 fn template_paths_are_same() -> std::io::Result<()> {
