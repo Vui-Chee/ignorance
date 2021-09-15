@@ -4,9 +4,9 @@ use ignorance::request::create_url;
 fn check_lang_url(lang: &str) {
     let expected_domain = "https://raw.githubusercontent.com/github/gitignore/master/";
     let gitignore_ext = ".gitignore";
-    let url = create_url(lang);
-    let url_len = url.len();
     let lang_filename = LANGUAGES_MAP.get(lang).unwrap();
+    let url = create_url(&format!("{}{}", lang_filename, gitignore_ext));
+    let url_len = url.len();
 
     // check domain
     assert_eq!(&url[..expected_domain.len()], expected_domain);
@@ -31,13 +31,13 @@ fn get_valid_url_for_lang() {
 }
 
 #[test]
-#[should_panic(expected = "lang should not be empty")]
+#[should_panic(expected = "filename should not be empty")]
 fn empty_string() {
     create_url("");
 }
 
 #[test]
-#[should_panic(expected = "lang should be ascii")]
+#[should_panic(expected = "filename should be ascii")]
 fn non_ascii() {
     create_url(".网络");
 }

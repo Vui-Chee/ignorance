@@ -1,27 +1,23 @@
 use std::path::Path;
 
-use crate::path::template_filename;
-
-pub fn create_url(lang: &str) -> String {
-    if lang.is_empty() {
-        panic!("lang should not be empty");
+pub fn create_url(filename: &str) -> String {
+    if filename == "" {
+        panic!("filename should not be empty");
     }
 
-    if !lang.is_ascii() {
-        panic!("lang should be ascii");
+    if !filename.is_ascii() {
+        panic!("filename should be ascii");
     }
 
-    let domain = Path::new("https://raw.githubusercontent.com/github/gitignore/master/");
-
-    domain
-        .join(template_filename(lang).unwrap())
+    Path::new("https://raw.githubusercontent.com/github/gitignore/master/")
+        .join(filename)
         .to_str()
         .unwrap()
         .to_string()
 }
 
-pub async fn fetch_template(lang: &str) -> Result<reqwest::Response, reqwest::Error> {
-    let gitignore_url = create_url(lang);
+pub async fn fetch_template(filename: &str) -> Result<reqwest::Response, reqwest::Error> {
+    let gitignore_url = create_url(filename);
     let client = reqwest::Client::new();
 
     client.get(gitignore_url).send().await

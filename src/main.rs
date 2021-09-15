@@ -20,7 +20,7 @@ use std::process::exit;
 use loader::display_loader;
 
 use file::Storage;
-use path::{template_dirpath, template_filepath};
+use path::{template_dirpath, template_filename, template_filepath};
 use prompt::prompt_user_before_overwrite;
 use request::fetch_template;
 
@@ -70,7 +70,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         let filepath = filepath_opt.unwrap();
         let storage = Storage::new(template_dirpath().as_path());
         if matches.is_present("update") || !filepath.exists() {
-            let response = fetch_template(lang).await?;
+            let filename = template_filename(lang).unwrap();
+            let response = fetch_template(&filename).await?;
 
             #[cfg(not(debug_assertions))]
             child.join().unwrap();
