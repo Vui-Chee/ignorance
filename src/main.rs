@@ -51,7 +51,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     if let Some(lang) = matches.value_of("lang") {
         let filepath = template_filepath(lang);
-        let storage_dirpath = template_dirpath();
 
         if filepath.is_dir() {
             eprintln!("Language Not Found");
@@ -64,7 +63,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
 
         // create template dir at home path.
-        let storage = Storage::new(storage_dirpath.as_path());
+        let storage = Storage::new(template_dirpath().as_path());
 
         #[cfg(not(debug_assertions))]
         let child = display_loader(10);
