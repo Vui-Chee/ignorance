@@ -1,7 +1,7 @@
 use std::path::Path;
 
 pub fn create_url(filename: &str) -> String {
-    if filename == "" {
+    if filename.is_empty() {
         panic!("filename should not be empty");
     }
 
