@@ -1,8 +1,6 @@
 use std::fs::{create_dir_all, File};
 use std::io::prelude::*;
-use std::path::{Path, PathBuf};
-
-use crate::path::template_filename;
+use std::path::Path;
 
 #[derive(Debug)]
 pub struct Storage {
@@ -21,18 +19,15 @@ impl Storage {
         })
     }
 
-    /// Returns the directory path where all the template files are stored.
-    pub fn path(&self) -> PathBuf {
-        PathBuf::from(self.dirname.to_owned())
-    }
-
     /// Writes contents to a template file.
     ///
     /// Opens a new file is template file does not exist, otherwise
     /// overwrites existing template file.
-    pub fn add_template(&self, lang: String, contents: &str) -> std::io::Result<PathBuf> {
-        let filename = template_filename(&lang).unwrap_or_default();
-        let template_path = self.path().join(filename);
+    pub fn add_template<P: AsRef<Path>>(
+        &self,
+        template_path: P,
+        contents: &str,
+    ) -> std::io::Result<P> {
         let mut file = File::create(&template_path)?;
 
         file.write_all(contents.as_bytes())?;

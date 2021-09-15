@@ -14,7 +14,7 @@ fn template_paths_are_same() -> std::io::Result<()> {
     let dirpath = home_dir().unwrap().join(".ignorance");
     let language = "opa";
     let storage = Storage::new(dirpath.as_path())?;
-    let add_template_filepath = storage.add_template(language.to_owned(), "testing")?;
+    let add_template_filepath = storage.add_template(dirpath.join("Opa.gitignore"), "testing")?;
     let func_filepath = template_filepath(language).unwrap();
 
     assert!(add_template_filepath.exists());

@@ -81,7 +81,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
 
             let template = response.text().await?;
-            storage?.add_template(lang.to_owned(), &template)?;
+            storage?.add_template(&filepath, &template)?;
         } else {
             #[cfg(not(debug_assertions))]
             child.join().unwrap();
