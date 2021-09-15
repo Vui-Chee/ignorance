@@ -1,11 +1,27 @@
 use assert_cmd::prelude::*;
+use dirs::home_dir;
 use predicates::str::contains;
 
 use std::fs::{read_to_string, remove_dir, remove_file, write};
 use std::path::Path;
 use std::process::Command;
 
+use ignorance::file::Storage;
 use ignorance::url::{template_dirpath, template_filepath};
+
+#[test]
+fn template_paths_are_same() -> std::io::Result<()> {
+    let dirpath = home_dir().unwrap().join(".ignorance");
+    let language = "opa";
+    let storage = Storage::new(dirpath.as_path())?;
+    let add_template_filepath = storage.add_template(language.to_owned(), "testing")?;
+    let func_filepath = template_filepath(language);
+
+    assert!(add_template_filepath.exists());
+    assert_eq!(add_template_filepath, func_filepath);
+
+    Ok(())
+}
 
 #[test]
 fn cli_no_args() {

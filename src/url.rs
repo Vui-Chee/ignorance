@@ -6,7 +6,7 @@ use crate::language::LANGUAGES_MAP;
 static TEMPLATE_DIRNAME: &str = ".ignorance";
 
 pub fn template_filename(lang: &str) -> Option<String> {
-    let filename = LANGUAGES_MAP.get(lang);
+    let filename = LANGUAGES_MAP.get(&lang.to_ascii_lowercase() as &str);
 
     if let Some(filename) = filename {
         let extension = ".gitignore";
