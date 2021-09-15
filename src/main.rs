@@ -6,9 +6,9 @@ mod loader;
 
 mod file;
 mod language;
+mod path;
 mod prompt;
 mod request;
-mod url;
 
 use clap::{App, Arg};
 
@@ -22,8 +22,8 @@ use loader::display_loader;
 use prompt::prompt_user_before_overwrite;
 
 use file::Storage;
+use path::{template_dirpath, template_filepath};
 use request::fetch_template;
-use url::{template_dirpath, template_filepath};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {

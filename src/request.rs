@@ -1,6 +1,6 @@
 use std::path::Path;
 
-use crate::url::template_filename;
+use crate::path::template_filename;
 
 pub fn create_url(lang: &str) -> String {
     if lang.is_empty() {

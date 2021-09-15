@@ -1,6 +1,6 @@
 use dirs::home_dir;
 
-use ignorance::url::{template_filename, template_filepath};
+use ignorance::path::{template_filename, template_filepath};
 
 #[test]
 fn valid_template_filename() {

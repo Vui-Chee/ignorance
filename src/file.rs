@@ -2,7 +2,7 @@ use std::fs::{create_dir_all, File};
 use std::io::prelude::*;
 use std::path::{Path, PathBuf};
 
-use crate::url::template_filename;
+use crate::path::template_filename;
 
 #[derive(Debug)]
 pub struct Storage {
