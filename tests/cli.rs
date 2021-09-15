@@ -7,23 +7,6 @@ use std::path::Path;
 use std::process::Command;
 
 use ignorance::file::Storage;
-use ignorance::path::TemplatePath;
-
-#[test]
-fn template_paths_are_same() -> std::io::Result<()> {
-    let home_path = home_dir().unwrap().clone();
-    let path_constructor = TemplatePath::new(home_path, ".ignorance");
-    let dirpath = path_constructor.dirpath();
-    let language = "opa";
-    let storage = Storage::new(dirpath.as_path())?;
-    let add_template_filepath = storage.add_template(dirpath.join("Opa.gitignore"), "testing")?;
-    let func_filepath = path_constructor.filepath(language).unwrap();
-
-    assert!(add_template_filepath.exists());
-    assert_eq!(add_template_filepath, func_filepath);
-
-    Ok(())
-}
 
 #[test]
 fn cli_no_args() {
@@ -97,10 +80,10 @@ fn cli_invalid_input_language_with_options() {
 ///   3) Check contents are correct
 #[test]
 fn cli_integrated() -> std::io::Result<()> {
-    let home_path = home_dir().unwrap().clone();
-    let path_constructor = TemplatePath::new(home_path, ".ignorance");
+    let home_path = home_dir().unwrap();
+    let storage = Storage::new(home_path, ".ignorance")?;
 
-    let did_template_dir_exists = path_constructor.dirpath().exists();
+    let did_template_dir_exists = storage.dirpath().exists();
 
     // Remember current .gitignore contents
     let mut previous_gitignore_contents = String::new();
@@ -119,12 +102,12 @@ fn cli_integrated() -> std::io::Result<()> {
         .stdout("Successfully generated .gitignore\n");
 
     // Check if template/gitignore files exist.
-    assert!(path_constructor.filepath("opa").unwrap().exists());
+    assert!(storage.filepath("opa").unwrap().exists());
     assert!(Path::new(".gitignore").exists());
 
     // Check contents match opa language.
     let gitignore_contents = read_to_string(".gitignore")?;
-    let template_contents = read_to_string(path_constructor.filepath("opa").unwrap())?;
+    let template_contents = read_to_string(storage.filepath("opa").unwrap())?;
     assert_eq!(template_contents, gitignore_contents);
 
     // Overwrite contents of gitignore with another language template.
@@ -137,7 +120,7 @@ fn cli_integrated() -> std::io::Result<()> {
 
     // Check contents match igorpro language.
     let gitignore_contents = read_to_string(".gitignore")?;
-    let template_contents = read_to_string(path_constructor.filepath("igorpro").unwrap())?;
+    let template_contents = read_to_string(storage.filepath("igorpro").unwrap())?;
     assert_eq!(template_contents, gitignore_contents);
 
     // Restore previous gitignore.
@@ -146,10 +129,10 @@ fn cli_integrated() -> std::io::Result<()> {
     }
 
     // Finally clean up.
-    remove_file(path_constructor.filepath("opa").unwrap())?;
-    remove_file(path_constructor.filepath("igorpro").unwrap())?;
+    remove_file(storage.filepath("opa").unwrap())?;
+    remove_file(storage.filepath("igorpro").unwrap())?;
     if !did_template_dir_exists {
-        remove_dir(path_constructor.dirpath())?;
+        remove_dir(storage.dirpath())?;
     }
 
     Ok(())

@@ -6,7 +6,6 @@ mod loader;
 
 mod file;
 mod language;
-mod path;
 mod prompt;
 mod request;
 
@@ -21,7 +20,6 @@ use std::process::exit;
 use loader::display_loader;
 
 use file::Storage;
-use path::TemplatePath;
 use prompt::prompt_user_before_overwrite;
 use request::fetch_template;
 
@@ -51,9 +49,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     if let Some(lang) = matches.value_of("lang") {
         let home_path = home_dir().unwrap();
-        let path_constructor = TemplatePath::new(home_path, ".ignorance");
+        let storage = Storage::new(home_path, ".ignorance")?;
 
-        if path_constructor.filename(lang).is_none() {
+        let filename = storage.filename(lang);
+        if filename.is_none() {
             eprintln!("Language Not Found");
             exit(1);
         }
@@ -69,27 +68,23 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         // Fetch from api if any of the two conditions are met:
         // 1. force_update option is applied
         // 2. template file does not exist
-        let storage = Storage::new(path_constructor.dirpath().as_path());
-        let filepath = path_constructor.filepath(lang).unwrap();
+        let filepath = storage.filepath(lang).unwrap();
         if matches.is_present("update") || !filepath.exists() {
-            let filename = path_constructor.filename(lang).unwrap();
-            let response = fetch_template(&filename).await?;
-
-            #[cfg(not(debug_assertions))]
-            child.join().unwrap();
+            let response = fetch_template(&filename.unwrap()).await?;
 
             if response.status() >= reqwest::StatusCode::BAD_REQUEST {
+                #[cfg(not(debug_assertions))]
+                child.join().unwrap();
                 eprintln!("Language Not Found");
                 exit(1);
             }
 
             let template = response.text().await?;
-            storage?.add_template(&filepath, &template)?;
-        } else {
-            #[cfg(not(debug_assertions))]
-            child.join().unwrap();
+            storage.add_template(lang, &template)?;
         }
 
+        #[cfg(not(debug_assertions))]
+        child.join().unwrap();
         stdout().flush()?;
 
         // Otherwise, read contents from template filepath.
