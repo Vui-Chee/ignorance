@@ -11,6 +11,7 @@ mod prompt;
 mod request;
 
 use clap::{App, Arg};
+use dirs::home_dir;
 
 use std::fs::copy;
 use std::io::{stdout, Write};
@@ -20,7 +21,7 @@ use std::process::exit;
 use loader::display_loader;
 
 use file::Storage;
-use path::{template_dirpath, template_filename, template_filepath};
+use path::TemplatePath;
 use prompt::prompt_user_before_overwrite;
 use request::fetch_template;
 
@@ -49,9 +50,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .get_matches();
 
     if let Some(lang) = matches.value_of("lang") {
-        let filepath_opt = template_filepath(lang);
+        let home_path = home_dir().unwrap();
+        let path_constructor = TemplatePath::new(home_path, ".ignorance");
 
-        if filepath_opt.is_none() {
+        if path_constructor.filename(lang).is_none() {
             eprintln!("Language Not Found");
             exit(1);
         }
@@ -67,10 +69,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         // Fetch from api if any of the two conditions are met:
         // 1. force_update option is applied
         // 2. template file does not exist
-        let filepath = filepath_opt.unwrap();
-        let storage = Storage::new(template_dirpath().as_path());
+        let storage = Storage::new(path_constructor.dirpath().as_path());
+        let filepath = path_constructor.filepath(lang).unwrap();
         if matches.is_present("update") || !filepath.exists() {
-            let filename = template_filename(lang).unwrap();
+            let filename = path_constructor.filename(lang).unwrap();
             let response = fetch_template(&filename).await?;
 
             #[cfg(not(debug_assertions))]

@@ -1,33 +1,29 @@
 use dirs::home_dir;
 
-use ignorance::path::{template_filename, template_filepath};
+// use std::path::PathBuf;
+
+use ignorance::path::TemplatePath;
 
 #[test]
-fn valid_template_filename() {
-    let filename = template_filename("c++");
-    assert_eq!(filename.unwrap(), "C++.gitignore");
-    let filename = template_filename("igorpro");
-    assert_eq!(filename.unwrap(), "IGORPro.gitignore");
-    let filename = template_filename("craftcms");
-    assert_eq!(filename.unwrap(), "CraftCMS.gitignore");
-    let filename = template_filename("episerver");
-    assert_eq!(filename.unwrap(), "EPiServer.gitignore");
+fn create_template_path() -> std::io::Result<()> {
+    let dir = home_dir().unwrap();
+    let _template_path = TemplatePath::new(dir.as_path(), ".ignorance");
+
+    // assert_eq!(
+    // template_path,
+    // TemplatePath {
+    // home_path: dir.path(),
+    // dirname: ".ignorance".to_owned()
+    // }
+    // );
+
+    Ok(())
 }
 
 #[test]
-fn invalid_template_filename() {
-    assert_eq!(template_filename("asdf"), None);
-}
+fn get_dirpath() {
+    let dir = home_dir().unwrap();
+    let template_path = TemplatePath::new(dir.as_path(), ".ignorance");
 
-#[test]
-fn valid_template_filepath() {
-    assert_eq!(
-        template_filepath("c++").unwrap(),
-        home_dir().unwrap().join(".ignorance").join("C++.gitignore")
-    );
-}
-
-#[test]
-fn invalid_template_filepath() {
-    assert_eq!(template_filepath("asdf"), None);
+    assert_eq!(template_path.dirpath(), dir.join(".ignorance"));
 }
