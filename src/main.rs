@@ -30,7 +30,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let matches = App::new("ignorance")
         .version(env!("CARGO_PKG_VERSION"))
         .author("Vui Chee <vuicheesiew@gmail.com>")
-        .about("generates ignore files for you")
+        .about("generates .gitignore for language")
         .arg(
             Arg::with_name("update")
                 .short("u")
@@ -53,7 +53,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         let filepath = template_filepath(lang);
         let storage_dirpath = template_dirpath();
 
-        if filepath == storage_dirpath {
+        if filepath.is_dir() {
             eprintln!("Language Not Found");
             exit(1);
         }
