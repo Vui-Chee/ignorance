@@ -92,8 +92,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
         stdout().flush()?;
 
-        eprintln!("FILEPATH {:?}, exists {}", filepath, filepath.exists());
-
         // Otherwise, read contents from template filepath.
         // NOTE: copy will create .gitignore if it does not exist.
         match copy(filepath, ".gitignore") {
