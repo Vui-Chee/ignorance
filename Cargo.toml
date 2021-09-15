@@ -1,9 +1,14 @@
 [package]
 name = "ignorance"
+description = "Another client tool for generating .gitignore files."
 version = "0.1.0"
-edition = "2018"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+edition = "2021"
+keywords = [".gitignore"]
+categories = ["command-line-utilities"]
+license = "MIT"
+homepage = "https://github.com/Vui-Chee/ignorance"
+repository = "https://github.com/Vui-Chee/ignorance"
+readme = "README.md"
 
 [dependencies]
 tokio = { version = "1.11.0", features = ["full"] }
