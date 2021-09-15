@@ -57,15 +57,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             exit(1);
         }
 
-        let filepath = filepath_opt.unwrap();
-
         // Prompt user before overwriting existing .gitignore
         if !matches.is_present("force") {
             prompt_user_before_overwrite()?;
         }
-
-        // create template dir at home path.
-        let storage = Storage::new(template_dirpath().as_path());
 
         #[cfg(not(debug_assertions))]
         let child = display_loader(10);
@@ -73,6 +68,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         // Fetch from api if any of the two conditions are met:
         // 1. force_update option is applied
         // 2. template file does not exist
+        let filepath = filepath_opt.unwrap();
+        let storage = Storage::new(template_dirpath().as_path());
         if matches.is_present("update") || !filepath.exists() {
             let response = fetch_template(lang).await?;
 
