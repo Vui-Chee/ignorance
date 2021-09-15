@@ -19,10 +19,9 @@ use std::process::exit;
 #[cfg(not(debug_assertions))]
 use loader::display_loader;
 
-use prompt::prompt_user_before_overwrite;
-
 use file::Storage;
 use path::{template_dirpath, template_filepath};
+use prompt::prompt_user_before_overwrite;
 use request::fetch_template;
 
 #[tokio::main]
