@@ -2,7 +2,9 @@ use std::fs::{create_dir_all, File};
 use std::io::prelude::*;
 use std::path::{Path, PathBuf};
 
-#[derive(Debug, PartialEq)]
+use crate::url::template_filename;
+
+#[derive(Debug)]
 pub struct Storage {
     dirname: String,
 }
@@ -24,26 +26,17 @@ impl Storage {
         PathBuf::from(self.dirname.to_owned())
     }
 
-    /// Returns template filename in the form of `<LANG>.gitignore`.
-    pub fn template_filename(&self, lang: String) -> String {
-        format!("{}.gitignore", lang)
-    }
-
     /// Writes contents to a template file.
     ///
     /// Opens a new file is template file does not exist, otherwise
     /// overwrites existing template file.
-    pub fn add_template(&self, lang: String, contents: &str) -> std::io::Result<()> {
-        let template_path = self.path().join(self.template_filename(lang));
+    pub fn add_template(&self, lang: String, contents: &str) -> std::io::Result<PathBuf> {
+        let filename = template_filename(&lang).unwrap_or_default();
+        let template_path = self.path().join(filename);
         let mut file = File::create(&template_path)?;
-        eprintln!(
-            "INSIDE ADD_TEMPLATE {:?}, path {:?}, exists {}",
-            file,
-            template_path,
-            template_path.exists()
-        );
+
         file.write_all(contents.as_bytes())?;
 
-        Ok(())
+        Ok(template_path)
     }
 }
