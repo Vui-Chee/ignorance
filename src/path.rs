@@ -21,6 +21,6 @@ pub fn template_dirpath() -> PathBuf {
     home_dir().unwrap().join(TEMPLATE_DIRNAME)
 }
 
-pub fn template_filepath(lang: &str) -> PathBuf {
-    template_dirpath().join(template_filename(lang).unwrap_or_else(|| "".to_owned()))
+pub fn template_filepath(lang: &str) -> Option<PathBuf> {
+    template_filename(lang).map(|filename| template_dirpath().join(filename))
 }

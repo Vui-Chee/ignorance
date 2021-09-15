@@ -50,12 +50,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .get_matches();
 
     if let Some(lang) = matches.value_of("lang") {
-        let filepath = template_filepath(lang);
+        let filepath_opt = template_filepath(lang);
 
-        if filepath.is_dir() {
+        if filepath_opt.is_none() {
             eprintln!("Language Not Found");
             exit(1);
         }
+
+        let filepath = filepath_opt.unwrap();
 
         // Prompt user before overwriting existing .gitignore
         if !matches.is_present("force") {

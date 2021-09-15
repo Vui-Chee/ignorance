@@ -22,15 +22,12 @@ fn invalid_template_filename() {
 #[test]
 fn valid_template_filepath() {
     assert_eq!(
-        template_filepath("c++"),
+        template_filepath("c++").unwrap(),
         home_dir().unwrap().join(".ignorance").join("C++.gitignore")
     );
 }
 
 #[test]
 fn invalid_template_filepath() {
-    assert_eq!(
-        template_filepath("asdf"),
-        home_dir().unwrap().join(".ignorance")
-    );
+    assert_eq!(template_filepath("asdf"), None);
 }
