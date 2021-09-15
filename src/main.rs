@@ -8,9 +8,9 @@ mod file;
 mod language;
 mod prompt;
 mod request;
-mod url;
 
 use clap::{App, Arg};
+use dirs::home_dir;
 
 use std::fs::copy;
 use std::io::{stdout, Write};
@@ -19,18 +19,16 @@ use std::process::exit;
 #[cfg(not(debug_assertions))]
 use loader::display_loader;
 
-use prompt::prompt_user_before_overwrite;
-
 use file::Storage;
+use prompt::prompt_user_before_overwrite;
 use request::fetch_template;
-use url::{template_dirpath, template_filepath};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let matches = App::new("ignorance")
         .version(env!("CARGO_PKG_VERSION"))
         .author("Vui Chee <vuicheesiew@gmail.com>")
-        .about("generates ignore files for you")
+        .about("generates .gitignore for language")
         .arg(
             Arg::with_name("update")
                 .short("u")
@@ -50,10 +48,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .get_matches();
 
     if let Some(lang) = matches.value_of("lang") {
-        let filepath = template_filepath(lang);
-        let storage_dirpath = template_dirpath();
+        let home_path = home_dir().unwrap();
+        let storage = Storage::new(home_path, ".ignorance")?;
 
-        if filepath == storage_dirpath {
+        let filename = storage.filename(lang);
+        if filename.is_none() {
             eprintln!("Language Not Found");
             exit(1);
         }
@@ -63,33 +62,29 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             prompt_user_before_overwrite()?;
         }
 
-        // create template dir at home path.
-        let storage = Storage::new(storage_dirpath.as_path());
-
         #[cfg(not(debug_assertions))]
         let child = display_loader(10);
 
         // Fetch from api if any of the two conditions are met:
         // 1. force_update option is applied
         // 2. template file does not exist
+        let filepath = storage.filepath(lang).unwrap();
         if matches.is_present("update") || !filepath.exists() {
-            let response = fetch_template(lang).await?;
-
-            #[cfg(not(debug_assertions))]
-            child.join().unwrap();
+            let response = fetch_template(&filename.unwrap()).await?;
 
             if response.status() >= reqwest::StatusCode::BAD_REQUEST {
+                #[cfg(not(debug_assertions))]
+                child.join().unwrap();
                 eprintln!("Language Not Found");
                 exit(1);
             }
 
             let template = response.text().await?;
-            storage?.add_template(lang.to_owned(), &template)?;
-        } else {
-            #[cfg(not(debug_assertions))]
-            child.join().unwrap();
+            storage.add_template(lang, &template)?;
         }
 
+        #[cfg(not(debug_assertions))]
+        child.join().unwrap();
         stdout().flush()?;
 
         // Otherwise, read contents from template filepath.
