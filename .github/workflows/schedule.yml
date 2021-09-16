@@ -1,8 +1,11 @@
 name: Schedule
 
 on:
+  push:
+    branches:
+      - scheduled-job
   schedule:
-    - cron: '5 * * * *'
+    - cron: '*/5 * * * *'
 
 env:
   CARGO_TERM_COLOR: always
