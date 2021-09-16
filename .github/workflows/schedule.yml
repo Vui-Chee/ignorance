@@ -2,7 +2,7 @@ name: Schedule
 
 on:
   schedule:
-    - cron: '30 3 * * 4'
+    - cron: '5 * * * *'
 
 env:
   CARGO_TERM_COLOR: always
@@ -17,7 +17,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          ref: publish
+          ref: scheduled-job
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
